@@ -29,7 +29,6 @@
         private void InitializeComponent()
         {
             label1 = new Label();
-            panel1 = new Panel();
             panel2 = new Panel();
             panel3 = new Panel();
             label2 = new Label();
@@ -37,6 +36,14 @@
             label4 = new Label();
             label5 = new Label();
             button1 = new Button();
+            dataGridView1 = new DataGridView();
+            Titre = new DataGridViewTextBoxColumn();
+            Artiste = new DataGridViewTextBoxColumn();
+            Année = new DataGridViewTextBoxColumn();
+            Durée = new DataGridViewTextBoxColumn();
+            Taille = new DataGridViewTextBoxColumn();
+            Featuring = new DataGridViewTextBoxColumn();
+            ((System.ComponentModel.ISupportInitialize)dataGridView1).BeginInit();
             SuspendLayout();
             // 
             // label1
@@ -45,24 +52,16 @@
             label1.BackColor = SystemColors.ActiveCaptionText;
             label1.Font = new Font("Segoe UI", 18F);
             label1.ForeColor = SystemColors.ButtonFace;
-            label1.Location = new Point(401, 9);
+            label1.Location = new Point(662, 9);
             label1.Name = "label1";
             label1.Size = new Size(168, 32);
             label1.TabIndex = 0;
             label1.Text = "P_Bit_Ruisseau";
             // 
-            // panel1
-            // 
-            panel1.BackColor = SystemColors.ButtonFace;
-            panel1.Location = new Point(54, 169);
-            panel1.Name = "panel1";
-            panel1.Size = new Size(249, 322);
-            panel1.TabIndex = 1;
-            // 
             // panel2
             // 
             panel2.BackColor = SystemColors.ButtonFace;
-            panel2.Location = new Point(357, 169);
+            panel2.Location = new Point(821, 286);
             panel2.Name = "panel2";
             panel2.Size = new Size(249, 322);
             panel2.TabIndex = 2;
@@ -70,7 +69,7 @@
             // panel3
             // 
             panel3.BackColor = SystemColors.ButtonFace;
-            panel3.Location = new Point(656, 169);
+            panel3.Location = new Point(1111, 286);
             panel3.Name = "panel3";
             panel3.Size = new Size(249, 322);
             panel3.TabIndex = 2;
@@ -100,7 +99,7 @@
             label4.AutoSize = true;
             label4.Font = new Font("Segoe UI", 15F);
             label4.ForeColor = SystemColors.ButtonFace;
-            label4.Location = new Point(357, 138);
+            label4.Location = new Point(821, 255);
             label4.Name = "label4";
             label4.Size = new Size(128, 28);
             label4.TabIndex = 5;
@@ -111,7 +110,7 @@
             label5.AutoSize = true;
             label5.Font = new Font("Segoe UI", 15F);
             label5.ForeColor = SystemColors.ButtonFace;
-            label5.Location = new Point(656, 138);
+            label5.Location = new Point(1111, 255);
             label5.Name = "label5";
             label5.Size = new Size(223, 28);
             label5.TabIndex = 6;
@@ -120,19 +119,73 @@
             // button1
             // 
             button1.Font = new Font("Segoe UI", 15F);
-            button1.Location = new Point(54, 71);
+            button1.Location = new Point(54, 29);
             button1.Name = "button1";
             button1.Size = new Size(177, 40);
             button1.TabIndex = 7;
             button1.Text = "Choisir un dossier";
             button1.UseVisualStyleBackColor = true;
+            button1.Click += button1_Click;
+            // 
+            // dataGridView1
+            // 
+            dataGridView1.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill;
+            dataGridView1.Columns.AddRange(new DataGridViewColumn[] { Titre, Artiste, Année, Durée, Taille, Featuring });
+            dataGridView1.Cursor = Cursors.No;
+            dataGridView1.ImeMode = ImeMode.NoControl;
+            dataGridView1.Location = new Point(54, 200);
+            dataGridView1.Name = "dataGridView1";
+            dataGridView1.RowHeadersVisible = false;
+            dataGridView1.Size = new Size(602, 408);
+            dataGridView1.TabIndex = 8;
+            dataGridView1.TabStop = false;
+            dataGridView1.CellContentClick += dataGridView1_CellContentClick;
+            // 
+            // Titre
+            // 
+            Titre.FillWeight = 137.7295F;
+            Titre.HeaderText = "Titre";
+            Titre.Name = "Titre";
+            // 
+            // Artiste
+            // 
+            Artiste.FillWeight = 300.31073F;
+            Artiste.HeaderText = "Artiste";
+            Artiste.Name = "Artiste";
+            // 
+            // Année
+            // 
+            Année.FillWeight = 282.284546F;
+            Année.HeaderText = "Année";
+            Année.Name = "Année";
+            // 
+            // Durée
+            // 
+            Durée.FillWeight = 254.140228F;
+            Durée.HeaderText = "Durée";
+            Durée.Name = "Durée";
+            // 
+            // Taille
+            // 
+            Taille.FillWeight = 222.5958F;
+            Taille.HeaderText = "Taille";
+            Taille.Name = "Taille";
+            // 
+            // Featuring
+            // 
+            Featuring.FillWeight = 302.938782F;
+            Featuring.HeaderText = "Featuring";
+            Featuring.Name = "Featuring";
             // 
             // Form1
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
+            AutoSize = true;
+            AutoSizeMode = AutoSizeMode.GrowAndShrink;
             BackColor = SystemColors.ActiveCaptionText;
-            ClientSize = new Size(959, 542);
+            ClientSize = new Size(1490, 657);
+            Controls.Add(dataGridView1);
             Controls.Add(button1);
             Controls.Add(label5);
             Controls.Add(label4);
@@ -140,10 +193,11 @@
             Controls.Add(label2);
             Controls.Add(panel3);
             Controls.Add(panel2);
-            Controls.Add(panel1);
             Controls.Add(label1);
+            FormBorderStyle = FormBorderStyle.SizableToolWindow;
             Name = "Form1";
             Text = "Form1";
+            ((System.ComponentModel.ISupportInitialize)dataGridView1).EndInit();
             ResumeLayout(false);
             PerformLayout();
         }
@@ -151,7 +205,6 @@
         #endregion
 
         private Label label1;
-        private Panel panel1;
         private Panel panel2;
         private Panel panel3;
         private Label label2;
@@ -159,5 +212,12 @@
         private Label label4;
         private Label label5;
         private Button button1;
+        protected DataGridView dataGridView1;
+        private DataGridViewTextBoxColumn Titre;
+        private DataGridViewTextBoxColumn Artiste;
+        private DataGridViewTextBoxColumn Année;
+        private DataGridViewTextBoxColumn Durée;
+        private DataGridViewTextBoxColumn Taille;
+        private DataGridViewTextBoxColumn Featuring;
     }
 }
