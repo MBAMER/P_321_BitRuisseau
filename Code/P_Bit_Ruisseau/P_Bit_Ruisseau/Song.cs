@@ -1,76 +1,68 @@
-﻿using BitRuisseau;
-using System;
-using System.Collections.Generic;
+﻿using System;
+using System.IO;
 using System.Linq;
-using System.Security.Cryptography;
-using System.Text;
 using System.Text.Json.Serialization;
-using System.Threading.Tasks;
+using TagLib;
 
 namespace P_Bit_Ruisseau
 {
+    // Implémente l'interface ISong sans la modifier.
     public class Song : ISong
     {
+        private readonly string _filePath;
+        private readonly string _hash;
+
         /// <summary>
-        /// The song title
+        /// Constructeur pour charger une chanson depuis un fichier local.
         /// </summary>
+        public Song(string filePath)
+        {
+            _filePath = filePath;
+
+            // Lecture des métadonnées avec TagLibSharp
+            using (var file = TagLib.File.Create(filePath))
+            {
+                Title = file.Tag.Title ?? Path.GetFileNameWithoutExtension(filePath);
+                Artist = file.Tag.FirstPerformer ?? "Artiste Inconnu";
+                Year = (int)file.Tag.Year;
+                Duration = file.Properties.Duration;
+
+                // Utilisation de LINQ pour filtrer les artistes 'Featuring'
+                Featuring = file.Tag.Performers
+                                .Where(p => p != Artist)
+                                .ToArray();
+            }
+
+            var fileInfo = new FileInfo(filePath);
+            Size = (int)fileInfo.Length;
+            Extension = fileInfo.Extension;
+
+            // Calcul du Hash (via Helper.cs)
+            _hash = Helper.HashFile(filePath);
+        }
+
+        /// <summary>
+        /// Constructeur vide pour la désérialisation JSON des chansons distantes.
+        /// </summary>
+        [JsonConstructor]
+        public Song()
+        {
+            _filePath = string.Empty;
+            // Les autres propriétés seront définies par le désérialiseur JSON.
+        }
+
+        // Implémentation des propriétés de l'interface ISong
         public string Title { get; set; }
-
-        /// <summary>
-        /// The song artist
-        /// </summary>
         public string Artist { get; set; }
-
-        /// <summary>
-        /// The song release date
-        /// </summary>
         public int Year { get; set; }
-
-        /// <summary>
-        /// The song duration in milliseconde
-        /// </summary>
         public TimeSpan Duration { get; set; }
-
-        /// <summary>
-        /// The song file size in bytes
-        /// </summary>
         public int Size { get; set; }
-
-        /// <summary>
-        /// The song featuring artists
-        /// </summary>
         public string[] Featuring { get; set; }
 
-        /// <summary>
-        /// The hash of the file content
-        /// </summary>
-        public string Hash { get; }
+        public string Hash => _hash ?? "N/A";
+        public string Extension { get; private set; }
 
-        /// <summary>
-        /// The file format of the song
-        /// </summary>
-        public string Extension { get; }
-
-        /// <summary>
-        /// The song path on disk
-        /// </summary>
         [JsonIgnore]
-        public string Path { get; set; }
-
-        public Song(string path)
-        {
-            TagLib.File tagFile = TagLib.File.Create(path);
-            Title = tagFile.Tag.Title;
-            Artist = tagFile.Tag.FirstAlbumArtist;
-            Year = Int32.Parse(tagFile.Tag.Year.ToString());
-            Duration = tagFile.Properties.Duration;
-            Size = Int32.Parse(new FileInfo(path).Length.ToString());
-            Featuring = tagFile.Tag.Performers;
-            Hash = Helper.HashFile(path);
-            Extension = new FileInfo(path).Extension;
-
-            Path = path;
-        }
+        public string FilePath => _filePath;
     }
-
 }

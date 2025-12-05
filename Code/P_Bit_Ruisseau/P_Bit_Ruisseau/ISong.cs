@@ -4,8 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace BitRuisseau
-{
+namespace P_Bit_Ruisseau;
     public interface ISong
     {
         /// <summary>

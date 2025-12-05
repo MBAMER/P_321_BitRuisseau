@@ -6,7 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Security.Cryptography;
 
-namespace BitRuisseau
+namespace P_Bit_Ruisseau
 {
     public static class Helper
     {
