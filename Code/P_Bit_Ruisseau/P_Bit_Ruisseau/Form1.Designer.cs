@@ -88,7 +88,7 @@
             label3.AutoSize = true;
             label3.Font = new Font("Segoe UI", 15F);
             label3.ForeColor = SystemColors.ButtonFace;
-            label3.Location = new Point(54, 138);
+            label3.Location = new Point(54, 169);
             label3.Name = "label3";
             label3.Size = new Size(57, 28);
             label3.TabIndex = 4;
@@ -125,7 +125,7 @@
             button1.TabIndex = 7;
             button1.Text = "Choisir un dossier";
             button1.UseVisualStyleBackColor = true;
-            button1.Click += button1_Click;
+            button1.Click += ChoixDossier;
             // 
             // dataGridView1
             // 
