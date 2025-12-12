@@ -4,14 +4,16 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace P_Bit_Ruisseau;
+namespace P_Bit_Ruisseau
+{
+
     public interface ISong
     {
         /// <summary>
         /// The song title
         /// </summary>
         public string Title { get; set; }
-        
+
         /// <summary>
         /// The song artist
         /// </summary>

@@ -6,7 +6,7 @@ using System.Text;
 using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 
-namespace BitRuisseau
+namespace P_Bit_Ruisseau
 {
     public class Message
     {
