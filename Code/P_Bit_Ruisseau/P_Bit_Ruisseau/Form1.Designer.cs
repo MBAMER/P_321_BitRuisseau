@@ -36,6 +36,14 @@
             label4 = new Label();
             label5 = new Label();
             button1 = new Button();
+            buttonSayOnline = new Button();
+            buttonSendCatalog = new Button();
+            buttonImport = new Button();
+            listBoxMediatheques = new ListBox();
+            dataGridViewRemote = new DataGridView();
+            statusLabel = new Label();
+            progressBar = new ProgressBar();
+            textBoxLog = new TextBox();
             dataGridView1 = new DataGridView();
             Titre = new DataGridViewTextBoxColumn();
             Artiste = new DataGridViewTextBoxColumn();
@@ -127,6 +135,51 @@
             button1.UseVisualStyleBackColor = true;
             button1.Click += ChoixDossier;
             // 
+            // buttonSayOnline
+            // 
+            buttonSayOnline.Font = new Font("Segoe UI", 9F);
+            buttonSayOnline.Location = new Point(250, 29);
+            buttonSayOnline.Name = "buttonSayOnline";
+            buttonSayOnline.Size = new Size(120, 40);
+            buttonSayOnline.TabIndex = 9;
+            buttonSayOnline.Text = "Dire en ligne";
+            buttonSayOnline.UseVisualStyleBackColor = true;
+            buttonSayOnline.Click += BtnSayOnline_Click;
+            // 
+            // buttonSendCatalog
+            // 
+            buttonSendCatalog.Font = new Font("Segoe UI", 9F);
+            buttonSendCatalog.Location = new Point(390, 29);
+            buttonSendCatalog.Name = "buttonSendCatalog";
+            buttonSendCatalog.Size = new Size(140, 40);
+            buttonSendCatalog.TabIndex = 10;
+            buttonSendCatalog.Text = "Envoyer catalogue";
+            buttonSendCatalog.UseVisualStyleBackColor = true;
+            buttonSendCatalog.Click += BtnSendCatalog_Click;
+            // 
+            // buttonDiscover
+            // 
+            buttonDiscover = new Button();
+            buttonDiscover.Font = new Font("Segoe UI", 9F);
+            buttonDiscover.Location = new Point(550, 29);
+            buttonDiscover.Name = "buttonDiscover";
+            buttonDiscover.Size = new Size(120, 40);
+            buttonDiscover.TabIndex = 11;
+            buttonDiscover.Text = "Découvrir";
+            buttonDiscover.UseVisualStyleBackColor = true;
+            buttonDiscover.Click += BtnDiscover_Click;
+            // 
+            // buttonImport
+            // 
+            buttonImport.Font = new Font("Segoe UI", 9F);
+            buttonImport.Location = new Point(821, 620);
+            buttonImport.Name = "buttonImport";
+            buttonImport.Size = new Size(249, 30);
+            buttonImport.TabIndex = 12;
+            buttonImport.Text = "Importer la sélection";
+            buttonImport.UseVisualStyleBackColor = true;
+            buttonImport.Click += BtnImport_Click;
+            // 
             // dataGridView1
             // 
             dataGridView1.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill;
@@ -140,6 +193,50 @@
             dataGridView1.TabIndex = 8;
             dataGridView1.TabStop = false;
             dataGridView1.CellContentClick += dataGridView1_CellContentClick;
+            // 
+            // dataGridViewRemote
+            // 
+            dataGridViewRemote.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill;
+            dataGridViewRemote.Location = new Point(0, 0);
+            dataGridViewRemote.Name = "dataGridViewRemote";
+            dataGridViewRemote.RowHeadersVisible = false;
+            dataGridViewRemote.Size = new Size(249, 322);
+            dataGridViewRemote.TabIndex = 12;
+            dataGridViewRemote.ReadOnly = true;
+            // 
+            // listBoxMediatheques
+            // 
+            listBoxMediatheques.Dock = DockStyle.Fill;
+            listBoxMediatheques.Name = "listBoxMediatheques";
+            listBoxMediatheques.TabIndex = 13;
+            // 
+            // statusLabel
+            // 
+            statusLabel.AutoSize = true;
+            statusLabel.ForeColor = SystemColors.ButtonFace;
+            statusLabel.Location = new Point(54, 620);
+            statusLabel.Name = "statusLabel";
+            statusLabel.Size = new Size(42, 15);
+            statusLabel.TabIndex = 14;
+            statusLabel.Text = "Prêt";
+            // 
+            // progressBar
+            // 
+            progressBar.Location = new Point(54, 640);
+            progressBar.Name = "progressBar";
+            progressBar.Size = new Size(602, 10);
+            progressBar.TabIndex = 15;
+            progressBar.Visible = false;
+            // 
+            // textBoxLog
+            // 
+            textBoxLog.Location = new Point(821, 200);
+            textBoxLog.Multiline = true;
+            textBoxLog.Name = "textBoxLog";
+            textBoxLog.ReadOnly = true;
+            textBoxLog.ScrollBars = ScrollBars.Vertical;
+            textBoxLog.Size = new Size(539, 44);
+            textBoxLog.TabIndex = 16;
             // 
             // Titre
             // 
@@ -185,8 +282,19 @@
             AutoSizeMode = AutoSizeMode.GrowAndShrink;
             BackColor = SystemColors.ActiveCaptionText;
             ClientSize = new Size(1490, 657);
+            // add remote grid to panel2 and listbox to panel3
+            panel2.Controls.Add(dataGridViewRemote);
+            panel3.Controls.Add(listBoxMediatheques);
+
             Controls.Add(dataGridView1);
             Controls.Add(button1);
+            Controls.Add(buttonSayOnline);
+            Controls.Add(buttonSendCatalog);
+            Controls.Add(buttonDiscover);
+            Controls.Add(buttonImport);
+            Controls.Add(textBoxLog);
+            Controls.Add(statusLabel);
+            Controls.Add(progressBar);
             Controls.Add(label5);
             Controls.Add(label4);
             Controls.Add(label3);
@@ -212,6 +320,15 @@
         private Label label4;
         private Label label5;
         private Button button1;
+        private Button buttonSayOnline;
+        private Button buttonSendCatalog;
+        private Button buttonDiscover;
+        private Button buttonImport;
+        private ListBox listBoxMediatheques;
+        private DataGridView dataGridViewRemote;
+        private Label statusLabel;
+        private ProgressBar progressBar;
+        private TextBox textBoxLog;
         protected DataGridView dataGridView1;
         private DataGridViewTextBoxColumn Titre;
         private DataGridViewTextBoxColumn Artiste;
