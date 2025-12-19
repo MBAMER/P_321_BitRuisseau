@@ -30,7 +30,9 @@
         {
             label1 = new Label();
             panel2 = new Panel();
+            dataGridViewRemote = new DataGridView();
             panel3 = new Panel();
+            listBoxMediatheques = new ListBox();
             label2 = new Label();
             label3 = new Label();
             label4 = new Label();
@@ -39,8 +41,6 @@
             buttonSayOnline = new Button();
             buttonSendCatalog = new Button();
             buttonImport = new Button();
-            listBoxMediatheques = new ListBox();
-            dataGridViewRemote = new DataGridView();
             statusLabel = new Label();
             progressBar = new ProgressBar();
             textBoxLog = new TextBox();
@@ -51,6 +51,10 @@
             Durée = new DataGridViewTextBoxColumn();
             Taille = new DataGridViewTextBoxColumn();
             Featuring = new DataGridViewTextBoxColumn();
+            buttonDiscover = new Button();
+            panel2.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)dataGridViewRemote).BeginInit();
+            panel3.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)dataGridView1).BeginInit();
             SuspendLayout();
             // 
@@ -69,18 +73,39 @@
             // panel2
             // 
             panel2.BackColor = SystemColors.ButtonFace;
+            panel2.Controls.Add(dataGridViewRemote);
             panel2.Location = new Point(821, 286);
             panel2.Name = "panel2";
             panel2.Size = new Size(249, 322);
             panel2.TabIndex = 2;
             // 
+            // dataGridViewRemote
+            // 
+            dataGridViewRemote.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill;
+            dataGridViewRemote.Location = new Point(0, 0);
+            dataGridViewRemote.Name = "dataGridViewRemote";
+            dataGridViewRemote.ReadOnly = true;
+            dataGridViewRemote.RowHeadersVisible = false;
+            dataGridViewRemote.Size = new Size(249, 322);
+            dataGridViewRemote.TabIndex = 12;
+            // 
             // panel3
             // 
             panel3.BackColor = SystemColors.ButtonFace;
+            panel3.Controls.Add(listBoxMediatheques);
             panel3.Location = new Point(1111, 286);
             panel3.Name = "panel3";
             panel3.Size = new Size(249, 322);
             panel3.TabIndex = 2;
+            // 
+            // listBoxMediatheques
+            // 
+            listBoxMediatheques.Dock = DockStyle.Fill;
+            listBoxMediatheques.ItemHeight = 15;
+            listBoxMediatheques.Location = new Point(0, 0);
+            listBoxMediatheques.Name = "listBoxMediatheques";
+            listBoxMediatheques.Size = new Size(249, 322);
+            listBoxMediatheques.TabIndex = 13;
             // 
             // label2
             // 
@@ -157,18 +182,6 @@
             buttonSendCatalog.UseVisualStyleBackColor = true;
             buttonSendCatalog.Click += BtnSendCatalog_Click;
             // 
-            // buttonDiscover
-            // 
-            buttonDiscover = new Button();
-            buttonDiscover.Font = new Font("Segoe UI", 9F);
-            buttonDiscover.Location = new Point(550, 29);
-            buttonDiscover.Name = "buttonDiscover";
-            buttonDiscover.Size = new Size(120, 40);
-            buttonDiscover.TabIndex = 11;
-            buttonDiscover.Text = "Découvrir";
-            buttonDiscover.UseVisualStyleBackColor = true;
-            buttonDiscover.Click += BtnDiscover_Click;
-            // 
             // buttonImport
             // 
             buttonImport.Font = new Font("Segoe UI", 9F);
@@ -180,43 +193,13 @@
             buttonImport.UseVisualStyleBackColor = true;
             buttonImport.Click += BtnImport_Click;
             // 
-            // dataGridView1
-            // 
-            dataGridView1.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill;
-            dataGridView1.Columns.AddRange(new DataGridViewColumn[] { Titre, Artiste, Année, Durée, Taille, Featuring });
-            dataGridView1.Cursor = Cursors.No;
-            dataGridView1.ImeMode = ImeMode.NoControl;
-            dataGridView1.Location = new Point(54, 200);
-            dataGridView1.Name = "dataGridView1";
-            dataGridView1.RowHeadersVisible = false;
-            dataGridView1.Size = new Size(602, 408);
-            dataGridView1.TabIndex = 8;
-            dataGridView1.TabStop = false;
-            dataGridView1.CellContentClick += dataGridView1_CellContentClick;
-            // 
-            // dataGridViewRemote
-            // 
-            dataGridViewRemote.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill;
-            dataGridViewRemote.Location = new Point(0, 0);
-            dataGridViewRemote.Name = "dataGridViewRemote";
-            dataGridViewRemote.RowHeadersVisible = false;
-            dataGridViewRemote.Size = new Size(249, 322);
-            dataGridViewRemote.TabIndex = 12;
-            dataGridViewRemote.ReadOnly = true;
-            // 
-            // listBoxMediatheques
-            // 
-            listBoxMediatheques.Dock = DockStyle.Fill;
-            listBoxMediatheques.Name = "listBoxMediatheques";
-            listBoxMediatheques.TabIndex = 13;
-            // 
             // statusLabel
             // 
             statusLabel.AutoSize = true;
             statusLabel.ForeColor = SystemColors.ButtonFace;
             statusLabel.Location = new Point(54, 620);
             statusLabel.Name = "statusLabel";
-            statusLabel.Size = new Size(42, 15);
+            statusLabel.Size = new Size(28, 15);
             statusLabel.TabIndex = 14;
             statusLabel.Text = "Prêt";
             // 
@@ -237,6 +220,20 @@
             textBoxLog.ScrollBars = ScrollBars.Vertical;
             textBoxLog.Size = new Size(539, 44);
             textBoxLog.TabIndex = 16;
+            // 
+            // dataGridView1
+            // 
+            dataGridView1.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill;
+            dataGridView1.Columns.AddRange(new DataGridViewColumn[] { Titre, Artiste, Année, Durée, Taille, Featuring });
+            dataGridView1.Cursor = Cursors.No;
+            dataGridView1.ImeMode = ImeMode.NoControl;
+            dataGridView1.Location = new Point(54, 200);
+            dataGridView1.Name = "dataGridView1";
+            dataGridView1.RowHeadersVisible = false;
+            dataGridView1.Size = new Size(602, 408);
+            dataGridView1.TabIndex = 8;
+            dataGridView1.TabStop = false;
+            dataGridView1.CellContentClick += dataGridView1_CellContentClick;
             // 
             // Titre
             // 
@@ -274,6 +271,17 @@
             Featuring.HeaderText = "Featuring";
             Featuring.Name = "Featuring";
             // 
+            // buttonDiscover
+            // 
+            buttonDiscover.Font = new Font("Segoe UI", 9F);
+            buttonDiscover.Location = new Point(550, 29);
+            buttonDiscover.Name = "buttonDiscover";
+            buttonDiscover.Size = new Size(120, 40);
+            buttonDiscover.TabIndex = 11;
+            buttonDiscover.Text = "Découvrir";
+            buttonDiscover.UseVisualStyleBackColor = true;
+            buttonDiscover.Click += BtnDiscover_Click;
+            // 
             // Form1
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
@@ -282,10 +290,6 @@
             AutoSizeMode = AutoSizeMode.GrowAndShrink;
             BackColor = SystemColors.ActiveCaptionText;
             ClientSize = new Size(1490, 657);
-            // add remote grid to panel2 and listbox to panel3
-            panel2.Controls.Add(dataGridViewRemote);
-            panel3.Controls.Add(listBoxMediatheques);
-
             Controls.Add(dataGridView1);
             Controls.Add(button1);
             Controls.Add(buttonSayOnline);
@@ -305,6 +309,9 @@
             FormBorderStyle = FormBorderStyle.SizableToolWindow;
             Name = "Form1";
             Text = "Form1";
+            panel2.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)dataGridViewRemote).EndInit();
+            panel3.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)dataGridView1).EndInit();
             ResumeLayout(false);
             PerformLayout();

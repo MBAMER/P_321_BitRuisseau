@@ -8,17 +8,18 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using System.Reflection;
 using P_Bit_Ruisseau;
 
 namespace P_Bit_Ruisseau
 {
     public partial class Form1 : Form
     {
-        // Catalogue Local (votre propre musique)
-        private List<Song> _localMediatheque;
-        // Interface pour la communication r�seau
+        // Catalogue Local (votre propre musique) — exposé via l'interface pour que Title/Artist soient visibles
+        private BindingList<ISong> _localMediatheque;
+        // Interface pour la communication réseau
         private IProtocol _protocol;
-
+        
         // Liste des noms de m�diath�ques en ligne d�couvertes (pour listBoxMediatheques)
         private BindingList<string> _onlineMediatheques;
 
@@ -32,27 +33,31 @@ namespace P_Bit_Ruisseau
             // 0. Initialisation des composants UI (essentiel)
             InitializeComponent();
 
-            // 1. Initialisation des Mod�les de Donn�es
-            _localMediatheque = new List<Song>();
+            // 1. Initialisation des Modèles de Données
+            _localMediatheque = new BindingList<ISong>();
             _onlineMediatheques = new BindingList<string>();
             _remoteCatalog = new BindingList<ISong>();
 
             // 2. Initialisation du Protocole (Utilisation de MqttProtocol)
             _protocol = new MqttProtocol(
-                localCatalogProvider: () => _localMediatheque.Cast<ISong>(),
-                // Logger qui utilise Invoke pour garantir la s�curit� thread-safe de l'UI
-                logger: message => Invoke((MethodInvoker)(() => Console.WriteLine($"[MQTT LOG] {message}")))
+                // fournir directement la collection d'ISong pour que DataGridView voie les propriétés de l'interface
+                localCatalogProvider: () => _localMediatheque,
+                // Logger qui utilise Invoke pour garantir la sécurité thread-safe de l'UI
+                logger: message => Invoke((System.Windows.Forms.MethodInvoker)(() => Console.WriteLine($"[MQTT LOG] {message}")))
             );
 
-            // S'abonner � l'�v�nement de r�ception de m�dia si le protocole le permet
+            // S'abonner à l'événement de réception de média si le protocole le permet
             if (_protocol is MqttProtocol mqttProtocol)
             {
                 mqttProtocol.MediaReceived += OnMediaReceived;
             }
 
-            // 3. Liaison des sources de donn�es aux contr�les UI
+            // 3. Liaison des sources de données aux contrôles UI
+            // On crée nous-même les colonnes à partir des propriétés publiques de Song (fiable si Song n'expose pas de champs publics)
+            dataGridView1.AutoGenerateColumns = false;
             dataGridView1.DataSource = _localMediatheque;
-
+            EnsureSongColumns();
+            
             // Tente de lier la liste des pairs au ListBox (nomm� 'listBoxMediatheques')
             if (this.Controls.Find("listBoxMediatheques", true).FirstOrDefault() is ListBox peerList)
             {
@@ -79,6 +84,7 @@ namespace P_Bit_Ruisseau
         /// </summary>
         private void ChoixDossier(object sender, EventArgs e)
         {
+            Console.WriteLine("ChoixDossier invoked");
             using (FolderBrowserDialog dialog = new FolderBrowserDialog())
             {
                 dialog.Description = "Choisissez un dossier contenant des fichiers musicaux";
@@ -104,18 +110,16 @@ namespace P_Bit_Ruisseau
                         .Where(song => song != null)
                         .ToList();
 
-                    // Mise � jour du catalogue local
+                    // Mise à jour du catalogue local
+                    // BindingList se met à jour automatiquement : vider puis ajouter un par un
                     _localMediatheque.Clear();
-                    _localMediatheque.AddRange(newSongs);
+                    foreach (var s in newSongs) _localMediatheque.Add((ISong)s);
+                    EnsureSongColumns();
+                    dataGridView1.Refresh();
 
-                    // Re-liaison et rafra�chissement pour forcer l'affichage sur la DataGridView locale
-                    dataGridView1.DataSource = null;
-                    dataGridView1.DataSource = _localMediatheque;
-                    dataGridView1.Refresh(); // <-- Correction pour garantir l'affichage
+                    MessageBox.Show($"{newSongs.Count} chansons chargées depuis : {selectedFolder}", "Catalogue local mis à jour");
 
-                    MessageBox.Show($"{newSongs.Count} chansons charg�es depuis : {selectedFolder}", "Catalogue local mis � jour");
-
-                    // Annoncer la pr�sence et le catalogue mis � jour sur le r�seau
+                    // Annoncer la présence et le catalogue mis à jour sur le r�seau
                     _protocol.SayOnline();
                 }
             }
@@ -193,15 +197,15 @@ namespace P_Bit_Ruisseau
         /// </summary>
         private void OnMediaReceived(object sender, (string FileName, byte[] Data) e)
         {
-            // S'assurer que le code est ex�cut� sur le thread de l'interface utilisateur (UI)
+            // S'assurer que le code est exécuté sur le thread de l'interface utilisateur (UI)
             if (InvokeRequired)
             {
                 Invoke(new EventHandler<(string, byte[])>(OnMediaReceived), sender, e);
                 return;
             }
 
-            // Pour le d�bogage : afficher la r�ception
-            Console.WriteLine($"Nouveau fragment de {e.Data.Length} octets re�u pour {e.FileName}.");
+            // Pour le débogage : afficher la réception
+            Console.WriteLine($"Nouveau fragment de {e.Data.Length} octets reçu pour {e.FileName}.");
             // Sauvegarder le fichier re�u dans le dossier Musique/BitRuisseauDownloads
             try
             {
@@ -212,15 +216,13 @@ namespace P_Bit_Ruisseau
 
                 UpdateLog($"Fichier reçu et sauvegardé: {filePath}");
 
-                // Tenter d'ajouter le fichier re�u au catalogue local (cr�e un Song à partir du fichier)
+                // Tenter d'ajouter le fichier reçu au catalogue local (crée un Song à partir du fichier)
                 try
                 {
                     var song = new Song(filePath);
-                    _localMediatheque.Add(song);
+                    _localMediatheque.Add((ISong)song); // ajouter comme ISong pour que les colonnes Title/Artist soient lues
 
                     // Rafraichir la grille locale
-                    dataGridView1.DataSource = null;
-                    dataGridView1.DataSource = _localMediatheque;
                     dataGridView1.Refresh();
 
                     MessageBox.Show($"Fichier reçu: {song.Title}", "Téléchargement terminé");
@@ -390,6 +392,79 @@ namespace P_Bit_Ruisseau
                 }
             }
             catch { }
+        }
+
+        /// <summary>
+        /// Crée des colonnes dans dataGridView1 à partir des propriétés publiques et fields de Song.
+        /// Vide d'abord toute colonne existante pour éviter colonnes "designer" sans DataPropertyName.
+        /// </summary>
+        private void EnsureSongColumns()
+        {
+            // Vider les colonnes existantes (designer parfois ajoute des colonnes vides)
+            dataGridView1.Columns.Clear();
+ 
+            // Lier aux propriétés de l'interface ISong pour s'assurer que Title/Artist sont visibles
+            var type = typeof(ISong);
+ 
+            // Priorité à des noms courants si présents (ordre utile pour visibilité)
+            string[] preferred = { "Title", "Artist", "Album", "Duration", "Size", "FilePath", "Path" };
+ 
+            var props = type.GetProperties(System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.Instance)
+                            .Where(p => p.GetMethod != null).ToDictionary(p => p.Name, p => (MemberInfo)p);
+ 
+            var fields = type.GetFields(System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.Instance)
+                             .ToDictionary(f => f.Name, f => (MemberInfo)f);
+ 
+            // Rassemble en respectant l'ordre privilégié
+            var added = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+ 
+            void AddMember(string name, MemberInfo member)
+            {
+                if (member == null || added.Contains(name)) return;
+                var col = new DataGridViewTextBoxColumn
+                {
+                    DataPropertyName = name,
+                    HeaderText = name,
+                    Name = "col_" + name,
+                    ReadOnly = true,
+                    AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill
+                };
+                dataGridView1.Columns.Add(col);
+                added.Add(name);
+            }
+ 
+            // Ajoute en priorité les propriétés/fields préférés
+            foreach (var n in preferred)
+            {
+                if (props.TryGetValue(n, out var pm)) AddMember(n, pm);
+                else if (fields.TryGetValue(n, out var fm)) AddMember(n, fm);
+            }
+ 
+            // Ajoute ensuite toutes les autres propriétés publiques
+            foreach (var kv in props)
+            {
+                AddMember(kv.Key, kv.Value);
+            }
+ 
+            // Puis les fields publics restants
+            foreach (var kv in fields)
+            {
+                AddMember(kv.Key, kv.Value);
+            }
+ 
+            // Si aucune colonne créée (classe Song sans membres publics), ajouter une colonne FilePath de secours
+            if (dataGridView1.Columns.Count == 0)
+            {
+                var col = new DataGridViewTextBoxColumn
+                {
+                    DataPropertyName = "FilePath",
+                    HeaderText = "FilePath",
+                    Name = "col_FilePath",
+                    ReadOnly = true,
+                    AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill
+                };
+                dataGridView1.Columns.Add(col);
+            }
         }
 
         // M�thode g�n�r�e par le designer mais non utilis�e pour l'instant
