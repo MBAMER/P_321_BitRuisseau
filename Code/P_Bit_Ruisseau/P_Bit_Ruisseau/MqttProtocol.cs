@@ -9,6 +9,7 @@ using P_Bit_Ruisseau;
 using MQTTnet;
 using MQTTnet.Client; 
 using System.Text.Json;
+using System.Text.Json.Serialization;
 using System.Net;
 using System.Configuration;
 using BrMessage = P_Bit_Ruisseau.Message;
@@ -85,7 +86,15 @@ namespace P_Bit_Ruisseau
             try
             {
                 var payload = Encoding.UTF8.GetString(e.ApplicationMessage.PayloadSegment);
-                var message = JsonSerializer.Deserialize<BrMessage>(payload);
+                
+                // Use JsonSerializerOptions with proper handling for interfaces
+                var options = new JsonSerializerOptions 
+                { 
+                    PropertyNameCaseInsensitive = true,
+                    WriteIndented = false
+                };
+                
+                var message = JsonSerializer.Deserialize<BrMessage>(payload, options);
 
                 if (message == null) 
                 {
@@ -118,11 +127,10 @@ namespace P_Bit_Ruisseau
                     case "askCatalog":
                         HandleAskCatalog(message.Sender);
                         break;
-                    // Typo in protocole.md says "askMedia" for SendCatalog, but we support both "sendCatalog" and the potential typo
-                    case "sendCatalog":
-                    case "askMedia" when message.SongList != null && message.SongList.Count > 0: 
+                    case "sendCatalog" when message.SongList != null && message.SongList.Count > 0: 
                         if (_pendingCatalogs.TryRemove(message.Sender, out var tcs))
                         {
+                            _logger?.Invoke($"Reçu catalogue avec {message.SongList.Count} chansons de {message.Sender}");
                             tcs.TrySetResult(message.SongList.Cast<ISong>().ToList());
                         }
                         break;
@@ -195,7 +203,14 @@ namespace P_Bit_Ruisseau
         {
             if (!_mqttClient.IsConnected) return;
 
-            var json = JsonSerializer.Serialize(message);
+            var options = new JsonSerializerOptions 
+            { 
+                PropertyNameCaseInsensitive = true,
+                WriteIndented = false,
+                DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull
+            };
+            
+            var json = JsonSerializer.Serialize(message, options);
             var mqttMessage = new MqttApplicationMessageBuilder()
                 .WithTopic(_topic)
                 .WithPayload(json)
