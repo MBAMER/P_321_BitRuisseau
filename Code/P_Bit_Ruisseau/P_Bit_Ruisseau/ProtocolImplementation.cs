@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Text.Json;
 using P_Bit_Ruisseau;
 
 namespace P_Bit_Ruisseau
@@ -80,14 +81,16 @@ namespace P_Bit_Ruisseau
     // Donnée mémoire pour testing
     public class MockProtocol : IProtocol
     {
+        private MqttService _service;
         private readonly Func<IEnumerable<ISong>> _catalogProvider;
         private readonly Action<string>? _logger;
         private readonly List<string> _peers = new() { "maison", "bureau", "studio" };
 
-        public MockProtocol(Func<IEnumerable<ISong>> catalogProvider, Action<string>? logger = null)
+        public MockProtocol(Func<IEnumerable<ISong>>? catalogProvider = null, Action<string>? logger = null)
         {
             _catalogProvider = catalogProvider;
             _logger = logger;
+            _service = new MqttService(this);
         }
 
         public string[] GetOnlineMediatheque()
@@ -96,8 +99,9 @@ namespace P_Bit_Ruisseau
             return _peers.ToArray();
         }
 
-        public void SayOnline()
+        public async void SayOnline()
         {
+            await _service.SendMessage(new Message() { Action = "online", Recipient = "0.0.0.0", Sender = Config.NAME });
             _logger?.Invoke("Annonce de présence envoyée.");
         }
 
@@ -130,10 +134,43 @@ namespace P_Bit_Ruisseau
             _logger?.Invoke($"Téléchargement demandé à {name} pour {song.Title} ({startByte}-{endByte}).");
         }
 
-        public void SendMedia(ISong song, string name, int startByte, int endByte)
+        public void SendMedia(string hash, string name, int startByte, int endByte)
         {
-            _logger?.Invoke($"Envoi de {song.Title} à {name} ({startByte}-{endByte}).");
+            _logger?.Invoke($"Envoi de {hash} à {name} ({startByte}-{endByte}).");
         }
+
+        public void HandleMessage(Message message)
+        {
+            _logger?.Invoke($"Message reçu de {message.Sender}: {JsonSerializer.Serialize(message)}");
+            if(message.Recipient == Config.NAME || message.Recipient == "0.0.0.0")
+            {
+
+                switch (message.Action)
+                {
+                    case "askOnline":
+                        SayOnline();
+                        break;
+                    case "online":
+                        //ajouté la liste des bibliothèque connu
+                        Program.Catalog.Add(message.Sender, new List<Song>());
+                        break;
+                    case "askCatalog":
+                        SendCatalog(message.Sender);
+                        break;
+                    case "sendCatalog":
+                        //stocké catalogue
+                        Program.Catalog[message.Sender] = JsonSerializer.Deserialize<List<Song>>(message.SongList.ToString());
+                        break;
+                    case "askMedia":
+                        SendMedia(message.Hash, message.Sender,int.Parse(message.StartByte.ToString()), int.Parse(message.EndByte.ToString()));
+                        break;
+                    case "sendMedia":
+                        // télécharger la chanson
+                        break;
+                }
+            }
+        }
+
 
         public void Dispose()
         {

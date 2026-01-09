@@ -38,8 +38,10 @@ namespace P_Bit_Ruisseau
             _onlineMediatheques = new BindingList<string>();
             _remoteCatalog = new BindingList<ISong>();
 
+
+            _protocol = new MockProtocol();
             // 2. Initialisation du Protocole (Utilisation de MqttProtocol)
-            _protocol = new MqttProtocol(
+           /* _protocol = new MqttProtocol(
                 // fournir directement la collection d'ISong pour que DataGridView voie les propriétés de l'interface
                 localCatalogProvider: () => _localMediatheque,
                 // Logger qui utilise Invoke pour garantir la sécurité thread-safe de l'UI
@@ -51,7 +53,7 @@ namespace P_Bit_Ruisseau
             {
                 mqttProtocol.MediaReceived += OnMediaReceived;
             }
-
+            */
             // 3. Liaison des sources de données aux contrôles UI
             // On crée nous-même les colonnes à partir des propriétés publiques de Song (fiable si Song n'expose pas de champs publics)
             dataGridView1.AutoGenerateColumns = false;
